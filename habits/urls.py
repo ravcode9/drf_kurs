@@ -10,4 +10,5 @@ router.register(r'habits', HabitViewSet, basename='habit')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('public/', HabitViewSet.as_view({'get': 'public_habits'}), name='public-habits'),
 ]

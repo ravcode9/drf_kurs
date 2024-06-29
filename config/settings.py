@@ -93,7 +93,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('NAME'),
         'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('PASSWORD')
+        'PASSWORD': os.getenv('PASSWORD'),
+        'HOST': os.getenv("HOST"),
+        'PORT': os.getenv("PORT"),
     }
 }
 
@@ -153,7 +155,9 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'habits.paginators.HabitsPaginator',
+    'PAGE_SIZE': 10,
 }
 
 CORS_ALLOWED_ORIGINS = [

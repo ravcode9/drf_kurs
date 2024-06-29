@@ -1,6 +1,9 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from users.permissions import IsOwner
 from .models import Habit
+from .paginators import HabitsPaginator
 from .serializers import HabitSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
@@ -15,6 +18,7 @@ class HabitViewSet(viewsets.ModelViewSet):
     """
     serializer_class = HabitSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = HabitsPaginator
 
     def get_queryset(self):
         """
@@ -64,3 +68,20 @@ class HabitViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def public_habits(self, request):
+        """
+        Получение списка публичных привычек.
+
+        Возвращает:
+            Response: Ответ с сериализованными данными публичных привычек.
+        """
+        public_habits = Habit.objects.filter(is_public=True)
+        page = self.paginate_queryset(public_habits)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(public_habits, many=True)
+        return Response(serializer.data)
